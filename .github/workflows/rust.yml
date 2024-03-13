@@ -37,9 +37,9 @@ jobs:
       uses: actions-rs/cargo@v1
       with:
         command: fmt
-        args: -- --check
+        args: --all --check
     - name: Catch common mistakes
       uses: actions-rs/cargo@v1
       with:
         command: clippy
-        args: --all-targets -- -D warnings
+        args: --all-targets --workspace -- -D warnings
