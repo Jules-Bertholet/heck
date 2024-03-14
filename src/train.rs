@@ -67,7 +67,6 @@ mod tests {
     t!(test6: "SHOUTY_SNAKE_CASE" => "Shouty-Snake-Case");
     t!(test7: "snake_case" => "Snake-Case");
     t!(test8: "this-contains_ ALLKinds OfWord_Boundaries" => "This-Contains-All-Kinds-Of-Word-Boundaries");
-    #[cfg(feature = "unicode")]
     t!(test9: "XΣXΣ baﬄe" => "Xσxς-Baﬄe");
     t!(test10: "XMLHttpRequest" => "Xml-Http-Request");
     t!(test11: "FIELD_NAME11" => "Field-Name11");
@@ -84,6 +83,21 @@ mod tests {
     t!(test23: "ABC123dEEf456FOO" => "Abc123d-E-Ef456foo");
     t!(test24: "abcDEF" => "Abc-Def");
     t!(test25: "ABcDE" => "A-Bc-De");
+    t!(test26: "ǄO" => "ǅo");
+    t!(test27: "ǆO" => "ǅ-O");
+    t!(test28: "ǆo" => "ǅo");
+    t!(test29: "∇𝐀" => "∇𝐀");
+    t!(test30: "∇𝔞" => "∇𝔞");
+    t!(test31: "𝔞" => "𝔞");
+    t!(test32: "🐈‍⬛🐈" => "🐈‍⬛🐈");
+    t!(test33: "🐈‍⬛🐈a" => "🐈‍⬛🐈A");
+    t!(test34: "A🐈‍⬛🐈a" => "A🐈‍⬛🐈a");
+    t!(test35: "☕" => "☕");
+    t!(test36: "a*️⃣b" => "A*️⃣b");
+    t!(test37: "a*️b" => "A*️b");
+    t!(test38: "\u{0301}a" => "\u{0301}A");
+    t!(test39: "a\u{0301}B" => "A\u{0301}-B");
+    t!(test40: "ﬄololo" => "Fflololo");
 
     t!(uts55_test1: "TypeII" => "Type-Ii");
     t!(uts55_test2: "OCaml" => "O-Caml");
