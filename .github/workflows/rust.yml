@@ -33,6 +33,7 @@ jobs:
       uses: actions-rs/cargo@v1
       with:
         command: test
+        args: --all
     - name: Check formatting
       uses: actions-rs/cargo@v1
       with:
@@ -43,3 +44,5 @@ jobs:
       with:
         command: clippy
         args: --all-targets --workspace -- -D warnings
+    - name: Regenerate Unicode tables
+      run: mv src/tables.rs tables.rs.bak && cd tables && cargo run && cd .. && diff src/tables.rs tables.rs.bak
