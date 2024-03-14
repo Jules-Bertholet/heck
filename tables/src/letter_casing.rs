@@ -166,7 +166,7 @@ pub fn is_non_greek_titlecase(c: char) -> bool {{
         root.len() + leaves.len() * size_of::<LeafElement>()
     );
 
-    write!(out, "const LETTER_CASING_ROOT: [u8; {}] = [", root.len())?;
+    write!(out, "static LETTER_CASING_ROOT: [u8; {}] = [", root.len())?;
 
     for line in root.chunks(16) {
         write!(out, "\n   ")?;
@@ -179,7 +179,7 @@ pub fn is_non_greek_titlecase(c: char) -> bool {{
         out,
         "\n];
 
-const LETTER_CASING_LEAVES: [{}; {}] = [",
+static LETTER_CASING_LEAVES: [{}; {}] = [",
         type_name::<LeafElement>(),
         leaves.len()
     )?;

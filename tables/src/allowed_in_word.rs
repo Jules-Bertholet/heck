@@ -160,7 +160,7 @@ pub fn allowed_in_word(c: char) -> bool {{
         root.len() + leaves.len() * size_of::<LeafElement>()
     );
 
-    write!(out, "const ALLOWED_IN_WORD_ROOT: [u8; {}] = [", root.len())?;
+    write!(out, "static ALLOWED_IN_WORD_ROOT: [u8; {}] = [", root.len())?;
 
     for line in root.chunks(16) {
         write!(out, "\n   ")?;
@@ -173,7 +173,7 @@ pub fn allowed_in_word(c: char) -> bool {{
         out,
         "\n];
 
-const ALLOWED_IN_WORD_LEAVES: [{}; {}] = [",
+static ALLOWED_IN_WORD_LEAVES: [{}; {}] = [",
         type_name::<LeafElement>(),
         leaves.len()
     )?;

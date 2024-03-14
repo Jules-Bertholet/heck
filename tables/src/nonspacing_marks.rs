@@ -137,7 +137,11 @@ pub fn is_nonspacing_mark(c: char) -> bool {{
         root.len() + leaves.len() * size_of::<LeafElement>()
     );
 
-    write!(out, "const NONSPACING_MARKS_ROOT: [u8; {}] = [", root.len())?;
+    write!(
+        out,
+        "static NONSPACING_MARKS_ROOT: [u8; {}] = [",
+        root.len()
+    )?;
 
     for line in root.chunks(16) {
         write!(out, "\n   ")?;
@@ -150,7 +154,7 @@ pub fn is_nonspacing_mark(c: char) -> bool {{
         out,
         "\n];
 
-const NONSPACING_MARKS_LEAVES: [{}; {}] = [",
+static NONSPACING_MARKS_LEAVES: [{}; {}] = [",
         type_name::<LeafElement>(),
         leaves.len()
     )?;
