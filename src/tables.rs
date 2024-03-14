@@ -792,37 +792,55 @@ static NONSPACING_MARKS_LEAVES: [u128; 107] = [
 ];
 
 use core::{
-    array,
-    char::ToUppercase,
     fmt::{self, Write},
     iter,
 };
 
 #[derive(Clone, Debug)]
-enum TitlecaseIter {
-    Titlecase(iter::Flatten<array::IntoIter<Option<char>, 3>>),
-    Uppercase(ToUppercase),
+pub enum ToTitlecase {
+    Zero,
+    One(char),
+    Two(char, char),
+    Three(char, char, char),
 }
 
-impl Iterator for TitlecaseIter {
+impl Iterator for ToTitlecase {
     type Item = char;
 
     fn next(&mut self) -> Option<Self::Item> {
-        match self {
-            Self::Titlecase(i) => i.next(),
-            Self::Uppercase(i) => i.next(),
+        match *self {
+            Self::Zero => None,
+            Self::One(c) => {
+                *self = Self::Zero;
+                Some(c)
+            }
+            Self::Two(b, c) => {
+                *self = Self::One(c);
+                Some(b)
+            }
+            Self::Three(a, b, c) => {
+                *self = Self::Two(b, c);
+                Some(a)
+            }
         }
     }
 
     fn size_hint(&self) -> (usize, Option<usize>) {
-        match self {
-            Self::Titlecase(i) => i.size_hint(),
-            Self::Uppercase(i) => i.size_hint(),
-        }
+        let size = match self {
+            Self::Zero => 0,
+            Self::One(_) => 1,
+            Self::Two(..) => 2,
+            Self::Three(..) => 3,
+        };
+        (size, Some(size))
     }
 }
 
-impl fmt::Display for TitlecaseIter {
+impl iter::ExactSizeIterator for ToTitlecase {}
+
+impl iter::FusedIterator for ToTitlecase {}
+
+impl fmt::Display for ToTitlecase {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         for c in self.clone() {
             f.write_char(c)?;
@@ -832,11 +850,30 @@ impl fmt::Display for TitlecaseIter {
 }
 
 /// Returns an iterator that yields the titlecase mapping of this `char` as one or more `char`s.
-pub fn to_titlecase(c: char) -> impl Iterator<Item = char> + fmt::Display {
-    if let Ok(idx) = TITLECASE_MAPPINGS.binary_search_by_key(&c, |&(c2, _)| c2) {
-        TitlecaseIter::Titlecase(TITLECASE_MAPPINGS[idx].1.into_iter().flatten())
+pub fn to_titlecase(c: char) -> ToTitlecase {
+    // ASCII fast path
+    if c.is_ascii() {
+        ToTitlecase::One(c.to_ascii_uppercase())
+    } else if let Ok(idx) = TITLECASE_MAPPINGS.binary_search_by_key(&c, |&(c2, _)| c2) {
+        match TITLECASE_MAPPINGS[idx].1 {
+            [None, ..] => ToTitlecase::Zero,
+            [Some(a), None, ..] => ToTitlecase::One(a),
+            [Some(a), Some(b), None] => ToTitlecase::Two(a, b),
+            [Some(a), Some(b), Some(c)] => ToTitlecase::Three(a, b, c),
+        }
     } else {
-        TitlecaseIter::Uppercase(c.to_uppercase())
+        let mut uppercase = c.to_uppercase();
+        match uppercase.size_hint().0 {
+            0 => ToTitlecase::Zero,
+            1 => ToTitlecase::One(uppercase.next().unwrap()),
+            2 => ToTitlecase::Two(uppercase.next().unwrap(), uppercase.next().unwrap()),
+            3 => ToTitlecase::Three(
+                uppercase.next().unwrap(),
+                uppercase.next().unwrap(),
+                uppercase.next().unwrap(),
+            ),
+            _ => unreachable!(),
+        }
     }
 }
 
