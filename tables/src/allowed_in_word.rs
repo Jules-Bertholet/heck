@@ -61,7 +61,9 @@ pub fn allowed_in_word(data: &DataFiles) -> CodepointBitArr {
         true,
     );
 
-    // TODO these are judgement calls, review them
+    // `Other_Symbol`
+    set_by_general_category(&mut word_component, data, "So", true);
+
     // Choose from characters in https://www.unicode.org/reports/tr31/#Specific_Character_Adjustments
     // that are not Punctuation other than Other_Punctuation
     // (U+00B7 is already in ID_Continue).
@@ -181,7 +183,22 @@ static ALLOWED_IN_WORD_LEAVES: [{}; {}] = [",
     for leaf in leaves {
         writeln!(out, "    0x{leaf:016X},")?;
     }
-    writeln!(out, "];")?;
+    writeln!(
+        out,
+        "];
+
+#[cfg(test)]
+#[test]
+fn test_allowed_in_words_casing_closure() {{
+    for c in '\\0'..=char::MAX {{
+        if allowed_in_word(c) {{
+            assert!(c.to_uppercase().all(allowed_in_word));
+            assert!(c.to_lowercase().all(allowed_in_word));
+        }}
+    }}
+}}
+"
+    )?;
 
     Ok(())
 }

@@ -98,6 +98,8 @@ mod tests {
     t!(test38: "\u{0301}a" => "\u{0301}A");
     t!(test39: "a\u{0301}B" => "A\u{0301}-B");
     t!(test40: "ﬄololo" => "Fflololo");
+    t!(test41: "oⓂ️" => "Oⓜ\u{fe0f}");
+    t!(test42: "Oⓜ\u{fe0f}" => "Oⓜ\u{fe0f}");
 
     t!(uts55_test1: "TypeII" => "Type-Ii");
     t!(uts55_test2: "OCaml" => "O-Caml");
